@@ -18,7 +18,6 @@
 
 package plugily.projects.murdermystery.events.spectator;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;

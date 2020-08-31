@@ -18,7 +18,6 @@
 
 package plugily.projects.murdermystery.handlers;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.Bukkit;
@@ -26,15 +25,11 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.golde.bukkit.corpsereborn.CorpseAPI.CorpseAPI;
 import org.golde.bukkit.corpsereborn.CorpseAPI.events.CorpseClickEvent;
 import org.golde.bukkit.corpsereborn.CorpseAPI.events.CorpseSpawnEvent;
 import org.golde.bukkit.corpsereborn.nms.Corpses;
-import pl.plajerlair.commonsbox.minecraft.compat.XMaterial;
 import plugily.projects.murdermystery.HookManager;
 import plugily.projects.murdermystery.Main;
 import plugily.projects.murdermystery.arena.Arena;
@@ -57,7 +52,6 @@ public class CorpseHandler implements Listener {
   private final ChatManager chatManager;
   private Corpses.CorpseData lastSpawnedCorpse;
   private final Map<String, String> registeredLastWords = new HashMap<>();
-  private boolean usesPaperSpigot;
 
   public CorpseHandler(Main plugin) {
     this.plugin = plugin;
@@ -72,13 +66,6 @@ public class CorpseHandler implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
       }
     }, 25L * 5);
-
-    try {
-      Class.forName("com.destroystokyo.paper.profile.PlayerProfile");
-      usesPaperSpigot = true;
-    } catch (Throwable t) {
-      usesPaperSpigot = false;
-    }
   }
 
   public void registerLastWord(String permission, String lastWord) {
