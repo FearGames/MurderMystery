@@ -18,6 +18,7 @@
 
 package plugily.projects.murdermystery.events.spectator;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -36,6 +37,7 @@ import plugily.projects.murdermystery.arena.Arena;
 import plugily.projects.murdermystery.arena.ArenaRegistry;
 import plugily.projects.murdermystery.arena.role.Role;
 import plugily.projects.murdermystery.handlers.ChatManager;
+import plugily.projects.murdermystery.utils.SkullUtils;
 import plugily.projects.murdermystery.utils.Utils;
 
 import java.util.Collections;
@@ -51,7 +53,6 @@ public class SpectatorItemEvents implements Listener {
   private final Main plugin;
   private final ChatManager chatManager;
   private final SpectatorSettingsMenu spectatorSettingsMenu;
-  private final boolean usesPaperSpigot = Bukkit.getServer().getVersion().contains("Paper");
 
   public SpectatorItemEvents(Main plugin) {
     this.plugin = plugin;
@@ -89,11 +90,6 @@ public class SpectatorItemEvents implements Listener {
       if (players.contains(player) && !plugin.getUserManager().getUser(player).isSpectator()) {
         ItemStack skull = XMaterial.PLAYER_HEAD.parseItem();
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
-        if (usesPaperSpigot && player.getPlayerProfile().hasTextures()) {
-          meta.setPlayerProfile(player.getPlayerProfile());
-        } else {
-          meta.setOwningPlayer(player);
-        }
         meta.setDisplayName(player.getName());
         String role = chatManager.colorMessage("In-Game.Spectator.Target-Player-Role", p);
         if (Role.isRole(Role.MURDERER, player)) {
@@ -106,6 +102,7 @@ public class SpectatorItemEvents implements Listener {
         meta.setLore(Collections.singletonList(role));
         skull.setDurability((short) SkullType.PLAYER.ordinal());
         skull.setItemMeta(meta);
+        SkullUtils.applyPlayerSkinToSkullAsync(plugin, skull, player.getUniqueId());
         inventory.addItem(skull);
       }
     }

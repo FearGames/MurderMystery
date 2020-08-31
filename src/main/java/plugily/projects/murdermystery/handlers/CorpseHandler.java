@@ -18,6 +18,7 @@
 
 package plugily.projects.murdermystery.handlers;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.Bukkit;
@@ -27,6 +28,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.golde.bukkit.corpsereborn.CorpseAPI.CorpseAPI;
 import org.golde.bukkit.corpsereborn.CorpseAPI.events.CorpseClickEvent;
@@ -39,6 +41,7 @@ import plugily.projects.murdermystery.arena.Arena;
 import plugily.projects.murdermystery.arena.ArenaRegistry;
 import plugily.projects.murdermystery.arena.corpse.Corpse;
 import plugily.projects.murdermystery.arena.corpse.Stand;
+import plugily.projects.murdermystery.utils.SkullUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +57,7 @@ public class CorpseHandler implements Listener {
   private final ChatManager chatManager;
   private Corpses.CorpseData lastSpawnedCorpse;
   private final Map<String, String> registeredLastWords = new HashMap<>();
+  private boolean usesPaperSpigot;
 
   public CorpseHandler(Main plugin) {
     this.plugin = plugin;
@@ -68,6 +72,13 @@ public class CorpseHandler implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
       }
     }, 25L * 5);
+
+    try {
+      Class.forName("com.destroystokyo.paper.profile.PlayerProfile");
+      usesPaperSpigot = true;
+    } catch (Throwable t) {
+      usesPaperSpigot = false;
+    }
   }
 
   public void registerLastWord(String permission, String lastWord) {
@@ -77,12 +88,8 @@ public class CorpseHandler implements Listener {
   public void spawnCorpse(Player p, Arena arena) {
     if (plugin.getHookManager() != null && !plugin.getHookManager().isFeatureEnabled(HookManager.HookFeature.CORPSES)) {
       ArmorStand stand = p.getLocation().getWorld().spawn(p.getLocation().add(0.0D, -1.25D, 0.0D), ArmorStand.class);
-      ItemStack head = XMaterial.PLAYER_HEAD.parseItem();
-      SkullMeta meta = (SkullMeta) head.getItemMeta();
-      meta.setOwner(p.getName());
-      head.setItemMeta(meta);
+      SkullUtils.applyPlayerSkinToArmorStandHead(plugin, stand, p.getUniqueId());
       stand.setVisible(false);
-      stand.setHelmet(head);
       stand.setGravity(false);
       stand.setCustomNameVisible(false);
       stand.setHeadPose(new EulerAngle(Math.toRadians(p.getLocation().getX()), Math.toRadians(p.getLocation().getPitch()), Math.toRadians(p.getLocation().getZ())));

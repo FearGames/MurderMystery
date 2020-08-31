@@ -18,13 +18,11 @@
 
 package plugily.projects.murdermystery.arena.managers;
 
+import fr.minuskube.netherboard.Netherboard;
+import fr.minuskube.netherboard.bukkit.BPlayerBoard;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.tigerhix.lib.scoreboard.ScoreboardLib;
-import me.tigerhix.lib.scoreboard.common.EntryBuilder;
-import me.tigerhix.lib.scoreboard.type.Entry;
-import me.tigerhix.lib.scoreboard.type.Scoreboard;
-import me.tigerhix.lib.scoreboard.type.ScoreboardHandler;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.plajerlair.commonsbox.string.StringFormatUtils;
@@ -39,6 +37,7 @@ import plugily.projects.murdermystery.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Plajer
@@ -53,8 +52,31 @@ public class ScoreboardManager {
   private final List<Scoreboard> scoreboards = new ArrayList<>();
   private final Arena arena;
 
+  public class Scoreboard {
+    private final User user;
+    private final BPlayerBoard board;
+
+    public Scoreboard(User user, BPlayerBoard board) {
+      this.user = user;
+      this.board = board;
+    }
+
+    public User getUser() {
+      return user;
+    }
+
+    public BPlayerBoard getBoard() {
+      return board;
+    }
+  }
+
   public ScoreboardManager(Arena arena) {
     this.arena = arena;
+    Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+      for (Scoreboard scoreboard : scoreboards) {
+        scoreboard.board.setAll(formatScoreboard(scoreboard.user).toArray(new String[0]));
+      }
+    }, 0, 5);
   }
 
   /**
@@ -64,19 +86,8 @@ public class ScoreboardManager {
    * @see User
    */
   public void createScoreboard(User user) {
-    Scoreboard scoreboard = ScoreboardLib.createScoreboard(user.getPlayer()).setHandler(new ScoreboardHandler() {
-      @Override
-      public String getTitle(Player player) {
-        return boardTitle;
-      }
-
-      @Override
-      public List<Entry> getEntries(Player player) {
-        return formatScoreboard(user);
-      }
-    });
-    scoreboard.activate();
-    scoreboards.add(scoreboard);
+    BPlayerBoard scoreboard = Netherboard.instance().createBoard(user.getPlayer(), boardTitle);
+    scoreboards.add(new Scoreboard(user, scoreboard));
   }
 
   /**
@@ -87,9 +98,9 @@ public class ScoreboardManager {
    */
   public void removeScoreboard(User user) {
     for (Scoreboard board : scoreboards) {
-      if (board.getHolder().equals(user.getPlayer())) {
+      if (board.user.getPlayer().equals(user.getPlayer())) {
         scoreboards.remove(board);
-        board.deactivate();
+        board.board.delete();
         return;
       }
     }
@@ -99,12 +110,11 @@ public class ScoreboardManager {
    * Forces all scoreboards to deactivate.
    */
   public void stopAllScoreboards() {
-    scoreboards.forEach(Scoreboard::deactivate);
+    scoreboards.forEach(board -> board.board.delete());
     scoreboards.clear();
   }
 
-  private List<Entry> formatScoreboard(User user) {
-    EntryBuilder builder = new EntryBuilder();
+  private List<String> formatScoreboard(User user) {
     List<String> lines;
     if (arena.getArenaState() == ArenaState.IN_GAME) {
       lines = LanguageManager.getLanguageList("Scoreboard.Content.Playing");
@@ -122,10 +132,7 @@ public class ScoreboardManager {
         lines = LanguageManager.getLanguageList("Scoreboard.Content." + arena.getArenaState().getFormattedName());
       }
     }
-    for (String line : lines) {
-      builder.next(formatScoreboardLine(line, user));
-    }
-    return builder.build();
+    return lines.stream().map(line -> formatScoreboardLine(line, user)).collect(Collectors.toList());
   }
 
   private String formatScoreboardLine(String line, User user) {

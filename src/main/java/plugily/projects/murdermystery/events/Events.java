@@ -20,6 +20,8 @@ package plugily.projects.murdermystery.events;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.Container;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -218,6 +220,18 @@ public class Events implements Listener {
       return;
     }
     event.setCancelled(true);
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onBlockInteract(PlayerInteractEvent event) {
+    Block block = event.getClickedBlock();
+    if (block == null) {
+      return;
+    }
+    if (block.getState() instanceof Container) {
+      // Deny opening block inventories
+      event.setCancelled(true);
+    }
   }
 
   @EventHandler
