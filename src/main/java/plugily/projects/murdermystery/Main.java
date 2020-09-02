@@ -158,7 +158,7 @@ public class Main extends JavaPlugin {
     }
 
     for (Arena arena : ArenaRegistry.getArenas()) {
-      arena.getScoreboardManager().stopAllScoreboards();
+      arena.getScoreboardManager().stopAllScoreboards(true);
       for (Player player : arena.getPlayers()) {
         arena.doBarAction(Arena.BarAction.REMOVE, player);
         arena.teleportToEndLocation(player);
