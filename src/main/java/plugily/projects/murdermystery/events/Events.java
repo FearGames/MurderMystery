@@ -21,6 +21,7 @@ package plugily.projects.murdermystery.events;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -33,6 +34,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.BlockInventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
@@ -228,7 +230,8 @@ public class Events implements Listener {
     if (block == null) {
       return;
     }
-    if (block.getState() instanceof Container) {
+    BlockState state = block.getState();
+    if (state instanceof BlockInventoryHolder) {
       // Deny opening block inventories
       event.setCancelled(true);
     }
