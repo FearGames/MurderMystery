@@ -55,6 +55,7 @@ import plugily.projects.murdermystery.utils.ItemPosition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * @author Plajer
@@ -442,6 +443,7 @@ public class ArenaManager {
       murders.append(p.getName()).append(" (").append(plugin.getUserManager().getUser(p).getStat(StatsStorage.StatisticType.LOCAL_KILLS)).append("), ");
       murdererKills += plugin.getUserManager().getUser(p).getStat(StatsStorage.StatisticType.LOCAL_KILLS);
     }
+    String murdererName = arena.getMurdererList().stream().map(Player::getName).collect(Collectors.joining(", "));
 
     murders.deleteCharAt(murders.length() - 2);
 
@@ -460,6 +462,7 @@ public class ArenaManager {
     formatted = StringUtils.replace(formatted, "%detective%", (arena.isDetectiveDead() ? ChatColor.STRIKETHROUGH : "") + detectives.toString());
 
     formatted = StringUtils.replace(formatted, "%murderer%", (arena.lastAliveMurderer() ? "" : ChatColor.STRIKETHROUGH) + murders.toString());
+    formatted = StringUtils.replace(formatted, "%murderer_name%", (arena.lastAliveMurderer() ? "" : ChatColor.STRIKETHROUGH) + murdererName);
 
     formatted = StringUtils.replace(formatted, "%murderer_kills%", String.valueOf(murdererKills));
     formatted = StringUtils.replace(formatted, "%hero%", arena.isCharacterSet(Arena.CharacterType.HERO)
