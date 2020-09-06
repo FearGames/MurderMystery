@@ -20,6 +20,7 @@ package plugily.projects.murdermystery.events;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.block.Bed;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
@@ -231,7 +232,7 @@ public class Events implements Listener {
       return;
     }
     BlockState state = block.getState();
-    if (state instanceof BlockInventoryHolder) {
+    if (state instanceof BlockInventoryHolder || state instanceof Bed) {
       // Deny opening block inventories
       event.setCancelled(true);
     }
