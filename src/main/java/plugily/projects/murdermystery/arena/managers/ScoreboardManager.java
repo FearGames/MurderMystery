@@ -37,9 +37,7 @@ import plugily.projects.murdermystery.handlers.ChatManager;
 import plugily.projects.murdermystery.handlers.language.LanguageManager;
 import plugily.projects.murdermystery.user.User;
 
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,23 +50,34 @@ public class ScoreboardManager {
   private static final Main plugin = JavaPlugin.getPlugin(Main.class);
   private static final ChatManager chatManager = plugin.getChatManager();
   private static final String boardTitle = chatManager.colorMessage("Scoreboard.Title");
-  private static SidebarManager sidebarManager;
 
-  private final Map<User, Sidebar> sidebars = new WeakHashMap<>();
+  private static SidebarManager sidebarManager;
+  private static Set<ScoreboardManager> arenaScoreboardManagers;
+
   private final Arena arena;
+  private final Map<User, Sidebar> sidebars;
 
   public ScoreboardManager(Arena arena) {
     this.arena = arena;
+    this.sidebars = new WeakHashMap<>();
 
     if (sidebarManager == null) {
       sidebarManager = new SidebarManager(plugin, null);
+      // Weak, so we don't keep an hard reference to the value (the arena reload doesn't cleanup the scoreboards)
+      arenaScoreboardManagers = Collections.newSetFromMap(new WeakHashMap<>());
 
       Bukkit.getScheduler().runTaskTimer(plugin, () ->
-        sidebars.forEach(ScoreboardManager.this::updateSidebar), 0, 5);
+        arenaScoreboardManagers.forEach(ScoreboardManager::tick), 0, 5);
     }
+
+    arenaScoreboardManagers.add(this);
   }
 
-  protected void updateSidebar(User user, Sidebar sidebar) {
+  private void tick() {
+    sidebars.forEach(this::update);
+  }
+
+  private void update(User user, Sidebar sidebar) {
     List<String> formattedScoreboard = formatScoreboard(user);
     int size = formattedScoreboard.size();
     for (int i = 0 ; i < size; i++) {
@@ -86,7 +95,7 @@ public class ScoreboardManager {
   public void createScoreboard(User user) {
     Sidebar sidebar = sidebarManager.createSidebar(user.getPlayer(), new AnimatedLine(-1, new AnimatedLineFrame(boardTitle)));
     sidebars.put(user, sidebar);
-    updateSidebar(user, sidebar);
+    update(user, sidebar);
   }
 
   /**
