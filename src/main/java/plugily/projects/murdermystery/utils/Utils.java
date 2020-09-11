@@ -20,14 +20,18 @@ package plugily.projects.murdermystery.utils;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+
 import pl.plajerlair.commonsbox.string.StringFormatUtils;
 import plugily.projects.murdermystery.Main;
 import plugily.projects.murdermystery.arena.ArenaRegistry;
@@ -36,6 +40,7 @@ import plugily.projects.murdermystery.handlers.ChatManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -129,10 +134,24 @@ public class Utils {
     if (sender.hasPermission(perm)) {
       return true;
     }
-    sender.sendMessage(chatManager.getPrefix() + chatManager.colorMessage("Commands-No-Permission"));
+    sender.sendMessage(chatManager.getPrefix() + chatManager.colorMessage("Commands.No-Permission"));
     return false;
   }
 
+  public static boolean setPlayerHead(Player player, SkullMeta meta) {
+    if (Bukkit.getServer().getVersion().contains("Paper") && player.getPlayerProfile().hasTextures()) {
+      return CompletableFuture.supplyAsync(() -> {
+        meta.setPlayerProfile(player.getPlayerProfile());
+        return true;
+      }).exceptionally(e -> {
+        Debugger.debug(java.util.logging.Level.WARNING, "Retrieving player profile failed!");
+        return null;
+      }).isDone();
+    }
+
+    meta.setOwningPlayer(player);
+    return true;
+  }
 
   public static Vector rotateAroundAxisX(Vector v, double angle) {
     angle = Math.toRadians(angle);
