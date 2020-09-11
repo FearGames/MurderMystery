@@ -21,15 +21,11 @@ package plugily.projects.murdermystery.handlers;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
-import pl.plajerlair.commonsbox.minecraft.compat.XMaterial;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.EulerAngle;
 import org.golde.bukkit.corpsereborn.CorpseAPI.CorpseAPI;
 import org.golde.bukkit.corpsereborn.CorpseAPI.events.CorpseClickEvent;
@@ -41,7 +37,7 @@ import plugily.projects.murdermystery.arena.Arena;
 import plugily.projects.murdermystery.arena.ArenaRegistry;
 import plugily.projects.murdermystery.arena.corpse.Corpse;
 import plugily.projects.murdermystery.arena.corpse.Stand;
-import plugily.projects.murdermystery.utils.Utils;
+import plugily.projects.murdermystery.utils.SkullUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -80,14 +76,8 @@ public class CorpseHandler implements Listener {
   public void spawnCorpse(Player p, Arena arena) {
     if (plugin.getHookManager() != null && !plugin.getHookManager().isFeatureEnabled(HookManager.HookFeature.CORPSES)) {
       ArmorStand stand = p.getLocation().getWorld().spawn(p.getLocation().add(0.0D, -1.25D, 0.0D), ArmorStand.class);
-      ItemStack head = XMaterial.PLAYER_HEAD.parseItem();
-      SkullMeta meta = (SkullMeta) head.getItemMeta();
-      if (Utils.setPlayerHead(p, meta)) {
-        head.setItemMeta(meta);
-      }
-
+      SkullUtils.applyPlayerSkinToArmorStandHead(plugin, stand, p.getUniqueId());
       stand.setVisible(false);
-      stand.setHelmet(head);
       stand.setGravity(false);
       stand.setCustomNameVisible(false);
       stand.setHeadPose(new EulerAngle(Math.toRadians(p.getLocation().getX()), Math.toRadians(p.getLocation().getPitch()), Math.toRadians(p.getLocation().getZ())));

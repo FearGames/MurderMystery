@@ -36,6 +36,7 @@ import plugily.projects.murdermystery.arena.Arena;
 import plugily.projects.murdermystery.arena.ArenaRegistry;
 import plugily.projects.murdermystery.arena.role.Role;
 import plugily.projects.murdermystery.handlers.ChatManager;
+import plugily.projects.murdermystery.utils.SkullUtils;
 import plugily.projects.murdermystery.utils.Utils;
 
 import java.util.Collections;
@@ -93,10 +94,6 @@ public class SpectatorItemEvents implements Listener {
       if (players.contains(player) && !plugin.getUserManager().getUser(player).isSpectator()) {
         ItemStack skull = XMaterial.PLAYER_HEAD.parseItem();
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
-        if (!Utils.setPlayerHead(p, meta)) {
-          continue;
-        }
-
         meta.setDisplayName(player.getName());
 
         String role = roleRaw;
@@ -110,6 +107,7 @@ public class SpectatorItemEvents implements Listener {
         meta.setLore(Collections.singletonList(role));
         skull.setDurability((short) SkullType.PLAYER.ordinal());
         skull.setItemMeta(meta);
+        SkullUtils.applyPlayerSkinToSkullAsync(plugin, skull, player.getUniqueId());
         inventory.addItem(skull);
       }
     }

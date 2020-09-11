@@ -24,7 +24,7 @@
 
     <groupId>plugily.projects</groupId>
     <artifactId>murdermystery</artifactId>
-    <version>1.6.2-b2</version>
+    <version>1.6.3-SNAPSHOT</version>
     <name>MurderMystery</name>
 
     <properties>
@@ -107,37 +107,37 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>feargames-repo</id>
+            <url>https://repo.feargames.it/repository/maven-public/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.16.1-R0.1-SNAPSHOT</version>
+            <version>1.16.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>pl.plajer</groupId>
             <artifactId>commons-box-classic</artifactId>
             <version>1.1.3</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>pl.plajer</groupId>
             <artifactId>commons-box-database</artifactId>
             <version>1.1.3</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>pl.plajer</groupId>
             <artifactId>commons-box-minecraft</artifactId>
             <version>1.1.3</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>me.tigerhix.lib</groupId>
-            <artifactId>scoreboard</artifactId>
-            <version>1.0.2</version>
-            <scope>compile</scope>
+            <groupId>it.feargames.fearboard</groupId>
+            <artifactId>fearboard-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
@@ -183,6 +183,7 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/CorpseReborn.jar</systemPath>
         </dependency>
+        <!--
         <dependency>
             <groupId>de.simonsator</groupId>
             <artifactId>partyandfriends</artifactId>
@@ -190,6 +191,7 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/PAFSpigot.jar</systemPath>
         </dependency>
+        -->
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
@@ -208,12 +210,24 @@
             <artifactId>Party-and-Friends-MySQL-Edition-Spigot-API</artifactId>
             <version>1.3.2</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>be.maximvdw</groupId>
+                    <artifactId>MVdWPlaceholderAPI</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>de.simonsator</groupId>
             <artifactId>Spigot-Party-API-For-RedisBungee</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>redis.clients</groupId>
+                    <artifactId>jedis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <build>
@@ -304,6 +318,7 @@
             </plugin>
 
             <!-- External beta versions discord deployer plugin -->
+            <!--
             <plugin>
                 <groupId>plugily.projects</groupId>
                 <artifactId>betty-maven-plugin</artifactId>
@@ -312,6 +327,7 @@
                     <changelogFile>${project.basedir}/CHANGELOG.md</changelogFile>
                 </configuration>
             </plugin>
+            -->
             <!-- External beta versions discord deployer plugin -->
         </plugins>
         <extensions>

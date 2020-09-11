@@ -20,7 +20,6 @@ package plugily.projects.murdermystery;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import me.tigerhix.lib.scoreboard.ScoreboardLib;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -159,7 +158,7 @@ public class Main extends JavaPlugin {
     }
 
     for (Arena arena : ArenaRegistry.getArenas()) {
-      arena.getScoreboardManager().stopAllScoreboards();
+      arena.getScoreboardManager().stopAllScoreboards(true);
       for (Player player : arena.getPlayers()) {
         arena.doBarAction(Arena.BarAction.REMOVE, player);
         arena.teleportToEndLocation(player);
@@ -181,7 +180,6 @@ public class Main extends JavaPlugin {
 
   private void initializeClasses() {
     chatManager = new ChatManager(this);
-    ScoreboardLib.setPluginInstance(this);
     if (getConfig().getBoolean("BungeeActivated", false)) {
       bungeeManager = new BungeeManager(this);
     }
